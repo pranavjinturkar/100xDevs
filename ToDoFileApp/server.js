@@ -57,7 +57,6 @@ app.get("/todos/:id", async (req, res) => {
   res.status(200).json(currentTodo[0]);
 });
 
-
 app.post("/todos", async (req, res) => {
   const { name, description, completed = false } = req.body;
 
@@ -171,7 +170,7 @@ app.delete("/todos/:id", async (req, res) => {
   });
 });
 
-// Route Not Found
+// Route Not Found (Middleware)
 app.use((req, res) => {
   res.status(404).json({ error: "Route Not Found" });
 });

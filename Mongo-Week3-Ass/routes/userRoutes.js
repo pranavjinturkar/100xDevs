@@ -1,6 +1,7 @@
 import express from "express";
 import { User, Course } from "../db/model.js";
 import authenticateUser from "../middleware/user.js";
+import signJWT from "../utils/signJWT.js";
 
 const router = express.Router();
 
@@ -20,7 +21,8 @@ router.post("/signup", async (req, res) => {
 
     if (isExistingUser)
       return res.status(400).json({
-        message: "Already an user! You Should Log In",
+        message:
+          "Already an user with this username! You Should Log In or use different Username",
         success: false,
       });
 
@@ -45,10 +47,36 @@ router.post("/signup", async (req, res) => {
 
 // Login User and Generate JWT
 router.post("/signin", async (req, res) => {
+  const { username, password } = req.body;
   if (!username || !password) {
     return res.status(400).json({
       message: "Username and password are required",
       success: false,
+    });
+  }
+
+  try {
+    const isExistingUser = await User.findOne({ username, password });
+    if (!isExistingUser) {
+      return res.status(400).json({
+        message: "Not a User, You should sign In",
+        success: false,
+      });
+    }
+
+    const token = signJWT({ username });
+
+    res.status(200).json({
+      message: "User Logged In Successfully",
+      success: true,
+      token,
+    });
+  } catch (error) {
+    console.log(error.message, error);
+    res.status(500).json({
+      message: "Internal Server Error, Error Logging User",
+      success: false,
+      debug: error.message,
     });
   }
 });
@@ -75,7 +103,7 @@ router.get("/courses", authenticateUser, async (req, res) => {
 
 router.post("/courses/:courseId", authenticateUser, async (req, res) => {
   const { courseId } = req.params;
-  const { username } = req.headers;
+  const username = req.username;
   if (!courseId)
     return res.status(400).json({
       message: "No CourseId Provided",
@@ -122,7 +150,7 @@ router.post("/courses/:courseId", authenticateUser, async (req, res) => {
 });
 
 router.get("/purchasedCourses", authenticateUser, async (req, res) => {
-  const username = req.headers.username;
+  const username = req.username;
 
   try {
     const allPurchasedCourses = await User.findOne({ username });
@@ -137,7 +165,6 @@ router.get("/purchasedCourses", authenticateUser, async (req, res) => {
 
     const courseDetails = await Course.find({ _id: { $in: courses } });
 
-    console.log(courses);
     res.status(200).json({
       success: true,
       courseDetails,

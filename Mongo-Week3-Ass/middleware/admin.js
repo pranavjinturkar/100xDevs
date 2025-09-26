@@ -1,10 +1,9 @@
-import { Admin } from "../db/model.js";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 
 dotenv.config({ quiet: true });
 
-export default async function adminMiddleWare(req, res, next) {
+export default function adminMiddleWare(req, res, next) {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {

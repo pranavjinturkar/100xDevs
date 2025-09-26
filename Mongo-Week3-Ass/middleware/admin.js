@@ -1,30 +1,34 @@
 import { Admin } from "../db/model.js";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+
+dotenv.config({ quiet: true });
 
 export default async function adminMiddleWare(req, res, next) {
-  const { username, password } = req.headers;
+  const authHeader = req.headers.authorization;
 
-  if (!username || !password) {
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res.status(401).json({
-      message: "Admin username/pass required",
-      success: false,
+      message: "Unauthorized Access, Please Sign In",
     });
   }
 
+  const token = authHeader.split(" ")[1];
   try {
-    const checkAdmin = await Admin.findOne({
-      username,
-      password,
-    });
-    if (!checkAdmin) {
-      return res.status(401).json({
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    if (decoded.username) {
+      next();
+    } else {
+      res.status(400).json({
         message: "Unauthorized Access",
-        success: false,
       });
-    } else next();
+    }
   } catch (error) {
     return res.status(401).json({
-      message: "Unauthorized Access",
+      message: "Invalid Inputs",
       success: false,
+      debug: error.message,
     });
   }
 }

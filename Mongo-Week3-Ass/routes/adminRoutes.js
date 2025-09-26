@@ -1,6 +1,7 @@
 import express from "express";
 import { Admin, Course } from "../db/model.js";
 import authenticateAdmin from "../middleware/admin.js";
+import signJWT from "../utils/signJWT.js";
 
 const router = express.Router();
 
@@ -43,7 +44,40 @@ router.post("/signup", async (req, res) => {
 });
 
 // Admin Login
-router.post("/signin", async (req, res) => {});
+router.post("/signin", async (req, res) => {
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res.status(400).json({
+      message: "Username and password are required",
+      success: false,
+    });
+  }
+  try {
+    const isExistingAdmin = await Admin.findOne({ username, password });
+
+    if (!isExistingAdmin) {
+      return res.status(404).json({
+        message: "Not an Admin... SignUp first",
+        success: false,
+      });
+    }
+
+    const token = signJWT({ username });
+    res.status(200).json({
+      message: "Admin Logged in Successfully",
+      success: true,
+      token,
+    });
+  } catch (error) {
+    console.log(error.message, error);
+    res.status(500).json({
+      message: "Internal Server Error, Error Logging in!",
+      success: false,
+      debug: error.message,
+    });
+  }
+});
 
 // Create a Course
 router.post("/courses", authenticateAdmin, async (req, res) => {

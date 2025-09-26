@@ -1,9 +1,7 @@
 import express from "express";
 import { User, Course } from "../db/model.js";
 import authenticateUser from "../middleware/user.js";
-import dotenv from "dotenv";
 
-dotenv.config({quiet: true})
 const router = express.Router();
 
 // Create User
@@ -22,7 +20,7 @@ router.post("/signup", async (req, res) => {
 
     if (isExistingUser)
       return res.status(400).json({
-        message: "Already an user!",
+        message: "Already an user! You Should Log In",
         success: false,
       });
 
@@ -46,7 +44,14 @@ router.post("/signup", async (req, res) => {
 });
 
 // Login User and Generate JWT
-router.post("/signin", async (req, res) => {});
+router.post("/signin", async (req, res) => {
+  if (!username || !password) {
+    return res.status(400).json({
+      message: "Username and password are required",
+      success: false,
+    });
+  }
+});
 
 // Get All Courses for User
 router.get("/courses", authenticateUser, async (req, res) => {

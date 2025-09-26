@@ -6,8 +6,8 @@ const app = express();
 app.use(express.json());
 
 // Admin Routes
-app.use("/admin", userRoutes);
+app.use("/admin", adminRoutes);
 // User Routes
-app.use("/user", adminRoutes);
+app.use("/user", userRoutes);
 
 app.listen(3000, () => console.log("Server Running on PORT 3000"));

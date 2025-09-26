@@ -1,1 +1,25 @@
-export function adminMiddleWare(req, res, next) {}
+import { Admin } from "../db/model.js";
+
+export async function adminMiddleWare(req, res, next) {
+  const { username, password } = req.headers;
+
+  if (!username || !password) {
+    return res.status(401).json({
+      message: "Admin username/pass required",
+      success: false,
+    });
+  }
+
+  try {
+    const checkAdmin = await Admin.findOne({
+      username,
+      password,
+    });
+    next();
+  } catch (error) {
+    return res.status(401).json({
+      message: "Unauthorized Access",
+      success: false,
+    });
+  }
+}

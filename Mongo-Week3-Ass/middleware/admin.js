@@ -1,6 +1,6 @@
 import { Admin } from "../db/model.js";
 
-export async function adminMiddleWare(req, res, next) {
+export default async function adminMiddleWare(req, res, next) {
   const { username, password } = req.headers;
 
   if (!username || !password) {
@@ -15,7 +15,12 @@ export async function adminMiddleWare(req, res, next) {
       username,
       password,
     });
-    next();
+    if (!checkAdmin) {
+      return res.status(401).json({
+        message: "Unauthorized Access",
+        success: false,
+      });
+    } else next();
   } catch (error) {
     return res.status(401).json({
       message: "Unauthorized Access",

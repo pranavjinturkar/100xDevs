@@ -1,6 +1,6 @@
 import express from "express";
 import { Admin, Course } from "../db/model.js";
-import { adminMiddleWare } from "../middleware/admin.js";
+import authenticateAdmin from "../middleware/admin.js";
 
 const router = express.Router();
 
@@ -43,7 +43,7 @@ router.post("/signup", async (req, res) => {
 });
 
 // Create a Course
-router.post("/courses", adminMiddleWare, async (req, res) => {
+router.post("/courses", authenticateAdmin, async (req, res) => {
   const {
     title,
     description,
@@ -79,7 +79,7 @@ router.post("/courses", adminMiddleWare, async (req, res) => {
 });
 
 // Fetch All Courses
-router.get("/courses", adminMiddleWare, async (req, res) => {
+router.get("/courses", authenticateAdmin, async (req, res) => {
   try {
     const courses = await Course.find();
 

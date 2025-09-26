@@ -42,6 +42,9 @@ router.post("/signup", async (req, res) => {
   }
 });
 
+// Admin Login
+router.post("/signin", async (req, res) => {});
+
 // Create a Course
 router.post("/courses", authenticateAdmin, async (req, res) => {
   const {

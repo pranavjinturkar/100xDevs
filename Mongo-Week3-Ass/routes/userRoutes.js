@@ -1,7 +1,9 @@
 import express from "express";
 import { User, Course } from "../db/model.js";
 import authenticateUser from "../middleware/user.js";
+import dotenv from "dotenv";
 
+dotenv.config({quiet: true})
 const router = express.Router();
 
 // Create User
@@ -43,6 +45,9 @@ router.post("/signup", async (req, res) => {
   }
 });
 
+// Login User and Generate JWT
+router.post("/signin", async (req, res) => {});
+
 // Get All Courses for User
 router.get("/courses", authenticateUser, async (req, res) => {
   const courses = await Course.find();
@@ -73,6 +78,7 @@ router.post("/courses/:courseId", authenticateUser, async (req, res) => {
     });
 
   try {
+    // Check if it's existing course or not... if there is no course by this id... throw error
     const isExistingCourse = await Course.findById(courseId);
     if (!isExistingCourse)
       return res.status(404).json({
@@ -80,8 +86,10 @@ router.post("/courses/:courseId", authenticateUser, async (req, res) => {
         success: false,
       });
 
+    // Check if the user he has already purchased this course before...
+    // if purchased just return
+    // else proceed
     const userDetails = await User.findOne({ username });
-
     if (userDetails.purchasedCourses.includes(isExistingCourse.id)) {
       return res.status(400).json({
         message: "You've already purchased this course once",
@@ -89,9 +97,9 @@ router.post("/courses/:courseId", authenticateUser, async (req, res) => {
       });
     }
 
-    const addCourseToUser = await User.updateOne(
+    await User.updateOne(
       { username },
-      { $push: { purchasedCourses: isExistingCourse.id } }
+      { $push: { purchasedCourses: courseId } }
     );
 
     res.status(200).json({
@@ -127,7 +135,7 @@ router.get("/purchasedCourses", authenticateUser, async (req, res) => {
     console.log(courses);
     res.status(200).json({
       success: true,
-      courseDetails
+      courseDetails,
     });
   } catch (error) {
     console.log(error.message, error);

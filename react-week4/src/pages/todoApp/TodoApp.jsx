@@ -9,17 +9,25 @@ const TodoApp = () => {
       description: "First Mini Project is Todo App",
     },
   ]);
-  const [todoId, setTodoId] = useState(0);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [editTodoId, setEditTodoId] = useState(null);
 
-  function generateTodoId() {
-    const number = Math.round(Math.random() * 1000 * 1000 * 100);
-    todos.map((t) =>
-      t.todoId === number ? generateTodoId() : setTodoId(number)
-    );
+  // function generateTodoId() {
+  //   const number = Math.round(Math.random() * 1000 * 1000 * 100);
+  //   todos.map((t) =>
+  //     t.todoId === number ? generateTodoId() : setTodoId(number)
+  //   );
+  // }
+
+  function generateTodoId(todos) {
+    let id;
+    do {
+      id = Math.round(Math.random() * 1000 * 1000);
+    } while (todos.some((t) => t.todoId === id));
+
+    return id;
   }
 
   // Add Todo
@@ -38,17 +46,14 @@ const TodoApp = () => {
       //   ...todos.filter((todo) => todo.todoId != editTodoId),
       //   editedTodo,
       // ]);
-      setTodos(
-        ...[todos.map((t) => (t.todoId === editTodoId ? editedTodo : t))]
-      );
+      setTodos(todos.map((t) => (t.todoId === editTodoId ? editedTodo : t)));
       setIsEditing(false);
       setEditTodoId(null);
     } else {
-      generateTodoId();
       setTodos([
         ...todos,
         {
-          todoId,
+          todoId: generateTodoId(todos),
           title,
           description,
         },
@@ -62,6 +67,7 @@ const TodoApp = () => {
   function handleEditTodo(id) {
     setIsEditing(true);
     const todo = todos.find((todo) => todo.todoId === id);
+    if(!todo) return;
     setEditTodoId(id);
     setTitle(todo.title);
     setDescription(todo.description);
@@ -69,9 +75,14 @@ const TodoApp = () => {
 
   // Delete Todo
   function handleDeleteTodo(id) {
-    // const filteredTodo = todos.filter((todo) => todo.id !== id);
-    // setTodos(filteredTodo);
     setTodos(todos.filter((todo) => todo.todoId != id));
+  }
+
+  function handleCancelEditedTodo() {
+    setIsEditing(false);
+    setEditTodoId(null);
+    setTitle("");
+    setDescription("");
   }
 
   return (
@@ -131,13 +142,23 @@ const TodoApp = () => {
         )}
       </div>
       <div
-        className={`absolute bottom-10 flex items-center transition-all duration-300 gap-4 shadow-md bg-red-600 text-white px-4 py-3 rounded-lg ${
+        className={`absolute bottom-10 transition-all duration-300 flex items-center gap-6 ${
           isEditing
             ? "scale-100 opacity-100 pointer-events-auto"
             : "opacity-0 scale-0 pointer-events-none"
         }`}
       >
-        You're editing a Todo <SquarePen className="text-white" />
+        <div
+          className="flex items-center gap-2 rounded-md shadow-md bg-amber-500 cursor-pointer hover:bg-amber-600 transition-colors duration-200 text-white font-semibold px-6 py-3"
+          onClick={handleCancelEditedTodo}
+        >
+          Cancel
+        </div>
+        <div
+          className={`flex items-center gap-4 shadow-md bg-red-600 text-white px-4 py-3 rounded-lg `}
+        >
+          You're editing a Todo <SquarePen className="text-white" />
+        </div>
       </div>
     </section>
   );

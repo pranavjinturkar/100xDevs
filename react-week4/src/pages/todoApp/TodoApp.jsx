@@ -67,7 +67,7 @@ const TodoApp = () => {
   function handleEditTodo(id) {
     setIsEditing(true);
     const todo = todos.find((todo) => todo.todoId === id);
-    if(!todo) return;
+    if (!todo) return;
     setEditTodoId(id);
     setTitle(todo.title);
     setDescription(todo.description);
@@ -115,25 +115,12 @@ const TodoApp = () => {
       <div className="w-full flex flex-col items-center gap-4">
         {todos.length > 0 ? (
           todos.map((todo) => (
-            <div
+            <TodoCard
+              title={todo.title}
+              description={todo.description}
+              id={todo.todoId}
               key={todo.todoId}
-              className="w-md py-3 flex items-center justify-between px-4 rounded-md bg-amber-500 shadow-md hover:scale-x-105 duration-300 transition-all"
-            >
-              <div className="flex flex-col items-start">
-                <h3 className="text-xl font-bold text-white">{todo.title}</h3>
-                <p className="text-sm text-white italic">{todo.description}</p>
-              </div>
-              <div className="flex items-center gap-4">
-                <SquarePen
-                  className="text-white hover:scale-110 transition-all duration-200 cursor-pointer"
-                  onClick={() => handleEditTodo(todo.todoId)}
-                />
-                <Trash2
-                  className="text-red-500 cursor-pointer transition-all duration-200 hover:scale-110"
-                  onClick={() => handleDeleteTodo(todo.todoId)}
-                />
-              </div>
-            </div>
+            />
           ))
         ) : (
           <div className="mt-4 text-gray-50 text-xl font-semibold">
@@ -165,3 +152,24 @@ const TodoApp = () => {
 };
 
 export default TodoApp;
+
+function TodoCard({ title, description, id }) {
+  return (
+    <div className="w-md py-3 flex items-center justify-between px-4 rounded-md bg-amber-500 shadow-md hover:scale-x-105 duration-300 transition-all">
+      <div className="flex flex-col items-start">
+        <h3 className="text-xl font-bold text-white">{title}</h3>
+        <p className="text-sm text-white italic">{description}</p>
+      </div>
+      <div className="flex items-center gap-4">
+        <SquarePen
+          className="text-white hover:scale-110 transition-all duration-200 cursor-pointer"
+          onClick={() => handleEditTodo(id)}
+        />
+        <Trash2
+          className="text-red-500 cursor-pointer transition-all duration-200 hover:scale-110"
+          onClick={() => handleDeleteTodo(id)}
+        />
+      </div>
+    </div>
+  );
+}

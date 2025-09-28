@@ -191,12 +191,6 @@ router.put("/cards/:cardId", authenticateAdmin, async (req, res) => {
       success: false,
     });
 
-  if (!name || !updates)
-    return res.status(400).json({
-      message: "Nothing Found To update",
-      success: false,
-    });
-
   const { description, interests, twitterId, linkedInId } = updates;
   const toUpdate = {};
 
@@ -213,6 +207,12 @@ router.put("/cards/:cardId", authenticateAdmin, async (req, res) => {
 
   if (typeof linkedInId === "string" && linkedInId.length > 0)
     toUpdate.linkedInId = linkedInId;
+
+  if (Object.keys(toUpdate).length === 0)
+    return res.status(400).json({
+      message: "Nothing Found To update",
+      success: false,
+    });
 
   try {
     // await BusinessCard.updateOne({ _id }, { $set: { email: 'newemail@example.com' } });

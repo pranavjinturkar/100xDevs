@@ -34,6 +34,30 @@ Token which stores json object(imp) used on web, for authentication purposes.
     });
   });
 
+## Mongo
+
+### Things to Remember: 
+
+  #### Create a Schema -> 
+  const UserSchema = new mongoose.Schema({
+    username: String,
+  }); 
+
+  #### Create a table using Schema -> 
+  export const User = mongoose.model("User", UserSchema);
+
+  #### How to connect the two tables -> 
+  const UserSchema = new mongoose.Schema({
+  username: String,
+  purchasedCourses: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Course",
+    },
+  ],
+});
+  // Array of Object Ids of Courses which are purchased
+
 ## React
 
 ### Things to Remember:

@@ -1,5 +1,5 @@
 import express, { json } from "express";
-import { User, BusinessCard } from "../db/index.js";
+import { BusinessCard, Admin } from "../db/index.js";
 import jwt from "jsonwebtoken";
 
 import dotenv from "dotenv";
@@ -19,14 +19,14 @@ router.post("/signup", async (req, res) => {
     });
 
   try {
-    const isExistingUser = await User.findOne({ username });
+    const isExistingUser = await Admin.findOne({ username });
     if (isExistingUser)
       return res.status(400).json({
         message: "Already an existing username... please try another",
         success: false,
       });
 
-    await User.insertOne({ name, username, password });
+    await Admin.insertOne({ name, username, password });
 
     res.status(201).json({
       message: "Admin Created Successfully",
@@ -53,8 +53,8 @@ router.post("/signin", async (req, res) => {
     });
 
   try {
-    const checkUser = await User.findOne({ username, password });
-    if (!checkUser)
+    const checkAdmin = await Admin.findOne({ username, password });
+    if (!checkAdmin)
       return res.status(404).json({
         message: "No user found with this credential",
         success: false,

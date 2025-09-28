@@ -1,7 +1,7 @@
 import express from "express";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-import { User, BusinessCard } from "../db/index";
+import { User, BusinessCard } from "../db/index.js";
 import authenticateUser from "../middleware/user.js";
 
 dotenv.config({ quiet: true });
@@ -19,7 +19,7 @@ router.post("/signup", async (req, res) => {
 
   try {
     const isExistingUser = await User.findOne({ username });
-    if (!isExistingUser)
+    if (isExistingUser)
       return res.status(400).json({
         message: "Existing User with this username",
         success: false,

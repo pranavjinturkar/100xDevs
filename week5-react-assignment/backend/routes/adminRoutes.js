@@ -1,6 +1,7 @@
 import express, { json } from "express";
 import { BusinessCard, Admin } from "../db/index.js";
 import jwt from "jsonwebtoken";
+import authenticateAdmin from "../middleware/admin.js";
 
 import dotenv from "dotenv";
 
@@ -68,6 +69,7 @@ router.post("/signin", async (req, res) => {
       message: "Admin Logged In Successfully",
       admin: true,
       success: true,
+      token,
     });
   } catch (error) {
     console.log(error, error.message);
@@ -96,6 +98,7 @@ router.get("/cards", async (req, res) => {
       message: "Cards Fetched Successfully",
       success: true,
       hasCards: true,
+      cards,
     });
   } catch (error) {
     console.log(error, error.message);
@@ -108,7 +111,7 @@ router.get("/cards", async (req, res) => {
 });
 
 // Create Card
-router.post("/cards", async (req, res) => {
+router.post("/cards", authenticateAdmin, async (req, res) => {
   const { name, description, interests, twitterId, linkedInId } = req.body;
   if (!name || !description || !twitterId || !linkedInId) {
     return res.status(400).json({

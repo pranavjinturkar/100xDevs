@@ -3,9 +3,11 @@ import dotenv from "dotenv";
 
 dotenv.config({ quiet: true });
 
-mongoose.connect(process.env.MONGODB_URL, {
-  dbName: "BusinessCards",
-});
+mongoose
+  .connect(process.env.MONGODB_URL, {
+    dbName: "BusinessCards",
+  })
+  .then(() => console.log("MongoDB connected Successfully!"));
 
 const adminSchema = new mongoose.Schema({
   username: String,

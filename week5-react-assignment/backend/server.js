@@ -8,4 +8,4 @@ app.use(express.json());
 app.use("/admin", adminRoutes);
 app.use("/user", userRoutes);
 
-app.listen(3000, "Server Listening On Port 3000!");
+app.listen(3000, () => console.log("Server Listening On Port 3000!"));

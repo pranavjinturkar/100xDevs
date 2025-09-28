@@ -9,14 +9,22 @@ const TodoApp = () => {
       description: "First Mini Project is Todo App",
     },
   ]);
-  const [todoId, setTodoId] = useState(2);
+  const [todoId, setTodoId] = useState(0);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [isEditing, setIsEditing] = useState(false);
-  const [editTodoId, setEditTodoId] = useState(0);
+  const [editTodoId, setEditTodoId] = useState(null);
 
-  function handleAddTodo() {
-    if (title.trim().length == 0 || description.trim().length == 0) {
+  function generateTodoId() {
+    const number = Math.round(Math.random() * 1000 * 1000 * 100);
+    todos.map((t) =>
+      t.todoId === number ? generateTodoId() : setTodoId(number)
+    );
+  }
+
+  // Add Todo
+  function handleAddorEditTodo() {
+    if (title.trim().length === 0 || description.trim().length === 0) {
       alert("Please Put Title and Description");
       return;
     }
@@ -26,12 +34,17 @@ const TodoApp = () => {
         description,
         title,
       };
-      setTodos([
-        ...todos.filter((todo) => todo.todoId != editTodoId),
-        editedTodo,
-      ]);
+      // setTodos([
+      //   ...todos.filter((todo) => todo.todoId != editTodoId),
+      //   editedTodo,
+      // ]);
+      setTodos(
+        ...[todos.map((t) => (t.todoId === editTodoId ? editedTodo : t))]
+      );
       setIsEditing(false);
+      setEditTodoId(null);
     } else {
+      generateTodoId();
       setTodos([
         ...todos,
         {
@@ -40,25 +53,27 @@ const TodoApp = () => {
           description,
         },
       ]);
-      setTodoId(todoId + 1);
     }
     setTitle("");
     setDescription("");
   }
 
+  // Edit Todo
   function handleEditTodo(id) {
     setIsEditing(true);
-    const todo = todos.find((todo) => todo.todoId == id);
+    const todo = todos.find((todo) => todo.todoId === id);
     setEditTodoId(id);
     setTitle(todo.title);
     setDescription(todo.description);
   }
 
+  // Delete Todo
   function handleDeleteTodo(id) {
     // const filteredTodo = todos.filter((todo) => todo.id !== id);
     // setTodos(filteredTodo);
     setTodos(todos.filter((todo) => todo.todoId != id));
   }
+
   return (
     <section className="relative z-0 w-full h-full flex flex-col items-center justify-center">
       <h1 className="text-4xl text-white font-serif font-semibold mb-6">
@@ -81,7 +96,7 @@ const TodoApp = () => {
         />
         <button
           className="bg-amber-500 cursor-pointer font-semibold hover:bg-amber-600 transition-colors duration-200 active:bg-amber-800 text-white px-4 py-2 rounded-md"
-          onClick={handleAddTodo}
+          onClick={handleAddorEditTodo}
         >
           {isEditing ? "Edit Todo" : "+ Add Todo"}
         </button>
@@ -114,6 +129,15 @@ const TodoApp = () => {
             No Todos at the moment
           </div>
         )}
+      </div>
+      <div
+        className={`absolute bottom-10 flex items-center transition-all duration-300 gap-4 shadow-md bg-red-600 text-white px-4 py-3 rounded-lg ${
+          isEditing
+            ? "scale-100 opacity-100 pointer-events-auto"
+            : "opacity-0 scale-0 pointer-events-none"
+        }`}
+      >
+        You're editing a Todo <SquarePen className="text-white" />
       </div>
     </section>
   );

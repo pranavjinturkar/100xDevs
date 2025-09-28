@@ -1,4 +1,4 @@
-import express, { json } from "express";
+import express from "express";
 import { BusinessCard, Admin } from "../db/index.js";
 import jwt from "jsonwebtoken";
 import authenticateAdmin from "../middleware/admin.js";
@@ -110,6 +110,37 @@ router.get("/cards", async (req, res) => {
   }
 });
 
+router.get("/cards/:cardId", async (req, res) => {
+  const { cardId } = req.params;
+  if (!cardId)
+    return res.status(400).json({
+      message: "No CardId Found",
+      success: false,
+    });
+
+  try {
+    const cardRes = await BusinessCard.findOne({ _id: cardId });
+    if (!cardRes)
+      return res.status(404).json({
+        message: "No Card found for this Id",
+        success: false,
+      });
+
+    res.status(200).json({
+      message: "Card Fetched Successfully",
+      success: true,
+      cardRes,
+    });
+  } catch (error) {
+    console.log(error, error.message);
+    res.status(500).json({
+      message: "Internal Server Details",
+      success: false,
+      debug: error.message,
+    });
+  }
+});
+
 // Create Card
 router.post("/cards", authenticateAdmin, async (req, res) => {
   const { name, description, interests, twitterId, linkedInId } = req.body;
@@ -149,6 +180,93 @@ router.post("/cards", authenticateAdmin, async (req, res) => {
         })
       )
     );
+});
+
+router.put("/cards/:cardId", authenticateAdmin, async (req, res) => {
+  const { cardId } = req.params;
+  const { name, ...updates } = req.body;
+  if (!cardId)
+    return res.status(400).json({
+      message: "No CardId Found",
+      success: false,
+    });
+
+  if (!name || !updates)
+    return res.status(400).json({
+      message: "Nothing Found To update",
+      success: false,
+    });
+
+  const { description, interests, twitterId, linkedInId } = updates;
+  const toUpdate = {};
+
+  if (typeof name === "string" && name.length > 0) toUpdate.name = name;
+
+  if (typeof description === "string" && description.length > 0)
+    toUpdate.description = description;
+
+  if (Array.isArray(interests) && interests.length > 0)
+    toUpdate.interests = interests;
+
+  if (typeof twitterId === "string" && twitterId.length > 0)
+    toUpdate.twitterId = twitterId;
+
+  if (typeof linkedInId === "string" && linkedInId.length > 0)
+    toUpdate.linkedInId = linkedInId;
+
+  try {
+    // await BusinessCard.updateOne({ _id }, { $set: { email: 'newemail@example.com' } });
+    await BusinessCard.updateOne(
+      { _id: cardId },
+      {
+        $set: {
+          ...toUpdate,
+        },
+      }
+    );
+
+    res.status(200).json({
+      message: "Card Updated Successfully",
+      success: true,
+    });
+  } catch (error) {
+    console.log(error, error.message);
+    res.status(500).json({
+      message: "Internal Server Error",
+      success: false,
+      message: error.message,
+    });
+  }
+});
+
+router.delete("/cards/:cardId", authenticateAdmin, async (req, res) => {
+  const { cardId } = req.params;
+  if (!cardId)
+    return res.status(400).json({
+      message: "Card Id is required to delete it",
+      success: false,
+    });
+
+  try {
+    const deleteRes = await BusinessCard.deleteOne({ _id: cardId });
+    if (!deleteRes)
+      return res.status(404).json({
+        message: "No Cards were deleted for this cardId",
+        success: false,
+      });
+
+    res.status(200).json({
+      message: "Card Deleted Successfully",
+      success: true,
+    });
+  } catch (error) {
+    console.log(error, error.message);
+    res.status(500).json({
+      message: "Internal Server Error",
+      success: false,
+      debug: error.message,
+    });
+  }
 });
 
 export default router;

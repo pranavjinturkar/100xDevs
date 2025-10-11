@@ -5,7 +5,7 @@ import {
   useRecoilValue,
   useSetRecoilState,
 } from "recoil";
-import { allTtodos, newTodo } from "./store/atoms/Todo";
+import { allTtodos, filterKey, filterTodo, newTodo } from "./store/atoms/Todo";
 
 const TodoApp = () => {
   return (
@@ -23,6 +23,7 @@ export default TodoApp;
 const AddTodoFn = () => {
   const [todo, setTodo] = useRecoilState(newTodo);
   const addNewTodo = useSetRecoilState(allTtodos);
+  const [filter, setFilter] = useRecoilState(filterKey);
 
   function add() {
     if (todo.title === "" || todo.description === "") {
@@ -49,18 +50,24 @@ const AddTodoFn = () => {
         onChange={(e) => setTodo({ ...todo, description: e.target.value })}
       />
       <button onClick={add}>Add +</button>
+      <input
+        type="text"
+        value={filter}
+        placeholder="Anything to filter"
+        onChange={(e) => setFilter(e.target.value)}
+      />
     </div>
   );
 };
 
 const AllTodosFn = () => {
-  const allTodo = useRecoilValue(allTtodos);
+  const filteredTodos = useRecoilValue(filterTodo)
 
-  if (allTodo.length == 0) return <div>No Todos Found</div>;
+  if (filteredTodos.length == 0) return <div>No Todos Found</div>;
 
   return (
     <div>
-      {allTodo.map((item, index) => (
+      {filteredTodos.map((item, index) => (
         <div key={index}>
           <h3>{item.title}</h3>
           <p>{item.description}</p>

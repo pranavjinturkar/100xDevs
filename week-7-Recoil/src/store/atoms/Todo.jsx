@@ -31,6 +31,8 @@ export const filterTodo = selector({
     const allTodos = get(allTtodos);
     const filter = get(filterKey);
 
+    if (filter === "") return allTodos;
+
     return allTodos.filter(
       (t) => t.title.includes(filter) || t.description.includes(filter)
     );

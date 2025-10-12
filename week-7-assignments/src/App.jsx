@@ -11,8 +11,8 @@ const App = () => {
       {/* <Assignment1 /> */}
       {/* <Assignment2 /> */}
       {/* <Assignment3 /> */}
-      <Assignment4 />
-      {/* <Assignment5 /> */}
+      {/* <Assignment4 /> */}
+      <Assignment5 />
     </div>
   );
 };

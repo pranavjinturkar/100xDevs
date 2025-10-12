@@ -9,8 +9,8 @@ const App = () => {
   return (
     <div className="bg-gradient-to-b from-rose-400 to-rose-600 w-full min-h-screen text-white">
       {/* <Assignment1 /> */}
-      <Assignment2 />
-      {/* <Assignment3 /> */}
+      {/* <Assignment2 /> */}
+      <Assignment3 />
       {/* <Assignment4 /> */}
       {/* <Assignment5 /> */}
     </div>

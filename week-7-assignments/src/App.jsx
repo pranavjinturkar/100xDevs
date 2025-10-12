@@ -4,6 +4,7 @@ import Assignment2 from "./components/A2-bg-changer";
 import Assignment3 from "./components/A3-para-generator";
 import Assignment4 from "./components/A4-github-card";
 import Assignment5 from "./components/A5-otp-login";
+import Assignment6 from "./components/A6-birthday-card";
 
 const App = () => {
   return (
@@ -12,7 +13,8 @@ const App = () => {
       {/* <Assignment2 /> */}
       {/* <Assignment3 /> */}
       {/* <Assignment4 /> */}
-      <Assignment5 />
+      {/* <Assignment5 /> */}
+      <Assignment6 />
     </div>
   );
 };

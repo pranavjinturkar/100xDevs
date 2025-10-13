@@ -10,6 +10,7 @@ mongoose
   .then(() => console.log("MongoDB connected!"));
 
 const todoSchema = new mongoose.Schema({
+  todoId: Number,
   title: String,
   description: String,
   isCompleted: { type: Boolean, default: false },

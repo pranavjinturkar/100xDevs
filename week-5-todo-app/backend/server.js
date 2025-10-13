@@ -23,7 +23,15 @@ app.post("/todos", async (req, res) => {
     });
 
   try {
+    const result = await Todo.aggregate([
+      { $group: { _id: null, maxTodo: { $max: "$todoId" } } },
+    ]);
+
+    const maxTodoValue = result.length ? result[0].maxTodo : 0;
+    console.log(maxTodoValue);
+
     await Todo.insertOne({
+      todoId: maxTodoValue + 1,
       title: createPayload.title,
       description: createPayload.description,
       isCompleted: false,
@@ -44,8 +52,15 @@ app.post("/todos", async (req, res) => {
 });
 
 app.get("/todos", async (req, res) => {
+  const { id, limit = 20 } = req.query;
+  let todos;
   try {
-    const todos = await Todo.find();
+    if (typeof id === "string" && id.length > 0) {
+      const todoId = parseInt(id);
+      todos = await Todo.findOne({ todoId });
+    } else {
+      todos = await Todo.find().limit(limit);
+    }
     res.status(200).json({
       message: "Todos Fetched Successfully",
       success: true,

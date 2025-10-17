@@ -3,17 +3,18 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
-  const users = await prisma.user.findMany({});
-  console.log(users);
-  const user = await prisma.user.findUnique({
+  const updateUser = await prisma.user.update({
     where: {
       id: 1,
     },
-    include: {
-      posts: true,
+    data: {
+      posts: {
+        deleteMany: {
+          published: false,
+        },
+      },
     },
   });
-  console.log(user);
 }
 
 main()

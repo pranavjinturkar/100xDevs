@@ -2,18 +2,19 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+// take : Limit (in postgres)
+// skip : offset (in postgres)
+
 async function main() {
-  const users = await prisma.user.findMany({});
-  console.log(users);
-  const user = await prisma.user.findUnique({
+  const res = await prisma.post.findMany({
+    take: 5,
+    skip: 5,
     where: {
-      id: 1,
-    },
-    include: {
-      posts: true,
+      authorId: 1,
     },
   });
-  console.log(user);
+
+  console.log(res);
 }
 
 main()

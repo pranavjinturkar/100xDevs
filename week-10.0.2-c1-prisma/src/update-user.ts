@@ -3,17 +3,15 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
-  const users = await prisma.user.findMany({});
-  console.log(users);
-  const user = await prisma.user.findUnique({
+  await prisma.user.update({
+    data: {
+      email: "nice@gmail.com",
+      name: "Yoooo"
+    },
     where: {
       id: 1,
     },
-    include: {
-      posts: true,
-    },
   });
-  console.log(user);
 }
 
 main()

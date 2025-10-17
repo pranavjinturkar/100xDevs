@@ -1,24 +1,32 @@
 import { PrismaClient } from "@prisma/client";
 
-const prisma = new PrismaClient({ log: ["info", "query"] });
+// { log: ["info", "query"] } : can be used under prisma client to get logs
 
-async function main() {
-  await prisma.post.create({
-    data: {
-      title: "Post 1",
-      content: "Content of Post 1",
-      published: true,
-      // authorId: 1,
-      author: {
-        connect: {
-          id: 1,
+const prisma = new PrismaClient();
+
+let createCount = 3;
+
+async function main(count: number) {
+  let i = 0;
+  while (i < count) {
+    await prisma.post.create({
+      data: {
+        title: `Post ${i}`,
+        content: `Content of Post ${i}`,
+        published: false,
+        // authorId: 1,
+        author: {
+          connect: {
+            id: 1,
+          },
         },
       },
-    },
-  });
+    });
+    i++;
+  }
 }
 
-main()
+main(createCount)
   .then(async () => {
     await prisma.$disconnect();
   })

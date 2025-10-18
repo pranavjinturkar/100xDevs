@@ -69,3 +69,33 @@ Token which stores json object(imp) used on web, for authentication purposes.
 3. a. Capitalized Names: React treats anything with a capitalized first letter as a custom component. For example, <CustomButton /> will be treated as a component that you’ve defined.
 
    b. Lowercase Names: React treats anything with a lowercase first letter as an HTML element. For example, <div> or <button> will be treated as standard HTML elements.
+
+
+### Postgres connection link: 
+
+How does it look like while accessing db through postgres: 
+```bash
+psql -U <username> -d <database> -h <host> -p <port>
+
+```
+
+Default One for every user:
+```bash
+psql -h localhost -p 5432 -U postgres -d postgres 
+```
+
+How to connect eg:
+```bash
+psql -U postgres -d posts
+```
+
+\l : list all dbs
+\c <dbname> : log onto that db
+\dt : List all tables
+\d <tablename> : list that table's structure
+
+## SSH into ec2 instance
+
+```bash
+  ssh -i <your-pem-key-path.pem> ubuntu@<instance-public-ip>
+```

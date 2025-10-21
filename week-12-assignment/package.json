@@ -1,0 +1,20 @@
+{
+  "name": "week-12-assignment",
+  "module": "src/index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "bun src/index.ts",
+    "dev": "bun --hot src/index.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "prisma": "^6.17.1"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}

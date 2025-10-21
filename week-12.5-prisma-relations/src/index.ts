@@ -1,85 +1,19 @@
 import { PrismaClient } from "@prisma/client";
+import express from "express";
+import todoRoutes from "./routes/todoRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
 
+const app = express();
 const prisma = new PrismaClient();
 
-type User = {
-  username: string;
-  password: string;
-  firstName?: string;
-  lastName?: string;
-};
+app.use(express.json());
 
-type Todo = {
-  title: string;
-  description: string;
-  userId: number;
-  completed?: boolean;
-};
+app.use("/user", userRoutes);
+app.use("/todo", todoRoutes);
 
-async function insertUser(user: User) {
-  const userRes = await prisma.user.create({
-    data: {
-      username: user.username,
-      password: user.password,
-      firstname: user.firstName || null,
-      lastname: user.lastName || null,
-    },
-  });
+app.listen(3000, () => console.log("Server Running on Port 3000!"));
 
-  return userRes;
-}
-
-async function insertTodo(todo: Todo) {
-  const { description, title, userId, completed = false } = todo;
-
-  const response = await prisma.todo.create({
-    data: {
-      title,
-      description,
-      userId,
-      completed,
-    },
-  });
-}
-
-async function getTodo(userId: number) {
-  const response = await prisma.todo.findMany({
-    where: {
-      userId,
-    },
-    select: {
-      id: true,
-      title: true,
-      description: true,
-      user: {
-        select: {
-          username: true,
-          password: true,
-        },
-      },
-    },
-  });
-
-  console.log(response);
-  return response;
-}
-
-getTodo(1);
-
-// insertUser({
-//   username: "test2",
-//   password: "test2",
-// });
-
-// insertTodo({
-//   title: "Todo1",
-//   description: "Desc1",
-//   userId: 1,
-// });
-
-// insertUser({
-//   username: "test10",
-//   password: "test3",
-//   firstName: "test3",
-//   lastName: "test4",
-// });
+process.on("SIGINT", () => {
+  prisma.$disconnect();
+  process.exit(0);
+});

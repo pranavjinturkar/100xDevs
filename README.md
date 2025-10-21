@@ -21,42 +21,45 @@ Token which stores json object(imp) used on web, for authentication purposes.
 
 ### Global Catch:
 
-  // It's a one time function...
-  // if something failed in webapp, which should not be exposed to the end user...
-  // then this function's role will come in place,
-  // which will handle errors for the user, and console the error in backend
-  app.use(function (err, req, res, next) {
-    console.log(err);
-    errorCount++;
-    res.status(600).json({
-      message: "Something is up on our server",
-      success: false,
-    });
-  });
+// It's a one time function...
+// if something failed in webapp, which should not be exposed to the end user...
+// then this function's role will come in place,
+// which will handle errors for the user, and console the error in backend
+app.use(function (err, req, res, next) {
+console.log(err);
+errorCount++;
+res.status(600).json({
+message: "Something is up on our server",
+success: false,
+});
+});
 
 ## Mongo
 
-### Things to Remember: 
+### Things to Remember:
 
-  #### Create a Schema -> 
-  const UserSchema = new mongoose.Schema({
-    username: String,
-  }); 
+#### Create a Schema ->
 
-  #### Create a table using Schema -> 
-  export const User = mongoose.model("User", UserSchema);
-
-  #### How to connect the two tables -> 
-  const UserSchema = new mongoose.Schema({
-  username: String,
-  purchasedCourses: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Course",
-    },
-  ],
+const UserSchema = new mongoose.Schema({
+username: String,
 });
-  // Array of Object Ids of Courses which are purchased
+
+#### Create a table using Schema ->
+
+export const User = mongoose.model("User", UserSchema);
+
+#### How to connect the two tables ->
+
+const UserSchema = new mongoose.Schema({
+username: String,
+purchasedCourses: [
+{
+type: mongoose.Schema.Types.ObjectId,
+ref: "Course",
+},
+],
+});
+// Array of Object Ids of Courses which are purchased
 
 ## React
 
@@ -70,21 +73,23 @@ Token which stores json object(imp) used on web, for authentication purposes.
 
    b. Lowercase Names: React treats anything with a lowercase first letter as an HTML element. For example, <div> or <button> will be treated as standard HTML elements.
 
+### Postgres connection link:
 
-### Postgres connection link: 
+How does it look like while accessing db through postgres:
 
-How does it look like while accessing db through postgres: 
 ```bash
 psql -U <username> -d <database> -h <host> -p <port>
 
 ```
 
 Default One for every user:
+
 ```bash
-psql -h localhost -p 5432 -U postgres -d postgres 
+psql -h localhost -p 5432 -U postgres -d postgres
 ```
 
 How to connect eg:
+
 ```bash
 psql -U postgres -d posts
 ```
@@ -99,3 +104,28 @@ psql -U postgres -d posts
 ```bash
   ssh -i <your-pem-key-path.pem> ubuntu@<instance-public-ip>
 ```
+
+```bash
+  postgresql://postgres:root@localhost:5432/postgres?sslmode=disable
+```
+   OR 
+
+```bash
+   postgresql://<username>:<password>@<host>:<port>/<dbname>
+```
+
+defaults are: 
+   username: postgres
+   host: localhost
+   port: 5432
+   dbname: 5432
+
+### Postgres with Docker container:
+
+```bash
+docker run --name <container-name> -e POSTGRES_PASSWORD=<password> -e POSTGRES_DB=<specific-db-name-or-default-is-postgres> -d -p 5432:5432 postgres
+```
+
+After running docker... our connection string will look like this...
+
+postgresql://postgres:<password>@localhost:5432/<specific-db-name-or-default-is-postgres>?ssl-mode=disable

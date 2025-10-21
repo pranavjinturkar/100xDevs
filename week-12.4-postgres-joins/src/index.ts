@@ -29,11 +29,16 @@ type User = {
 async function insertUser(user: User) {
   const { email, password, username } = user;
   await client.connect();
+  //   const result = await client.query(
+  //     `
+  //          insert into users (username, email, password) values ($1, $2, $3)
+  //       `,
+  //     [username, email, password]
+  //   );
   const result = await client.query(
     `
-         insert into users (username, email, password) values ($1, $2, $3)
-      `,
-    [username, email, password]
+         insert into users (username, email, password) values ('${email}', '${username}', '${password}')
+      `
   );
 
   console.log(result);
@@ -41,7 +46,7 @@ async function insertUser(user: User) {
 
 // createUsersTable();
 insertUser({
-  email: "pranav@gmail.com",
+  email: "'); DROP TABLE users; --",
   password: "124",
-  username: "abc",
+  username: "abcde",
 });

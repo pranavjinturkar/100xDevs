@@ -6,10 +6,38 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
+  // output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model Survey {
+  id        Int         @id @default(autoincrement())
+  title     String
+  questions Questions[]
+
+  @@map("surveys")
+}
+
+model Questions {
+  id       Int       @id @default(autoincrement())
+  text     String
+  survey   Survey    @relation(fields: [surveyId], references: [id], onDelete: Cascade)
+  surveyId Int       @map("survey_id")
+  options  Options[]
+
+  @@map("questions")
+}
+
+model Options {
+  id         Int       @id @default(autoincrement())
+  text       String
+  votes      Int       @default(0)
+  question   Questions @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  questionId Int       @map("question_id")
+
+  @@map("options")
 }

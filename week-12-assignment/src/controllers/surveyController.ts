@@ -1,5 +1,9 @@
 import type { Request, Response } from "express";
-import { getAllSurvey, getDetailedSurvey } from "../models/surveyModel";
+import {
+  deleteSurvey,
+  getAllSurvey,
+  getDetailedSurvey,
+} from "../models/surveyModel";
 import type {
   Option,
   OptionType,
@@ -130,6 +134,95 @@ export const getDetailedSurveyFn = async (req: Request, res: Response) => {
     });
   }
 };
+
+export const deleteSurveyFn = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  if (!id)
+    return res.status(400).json({
+      message: "No surveyId provided",
+      success: false,
+    });
+
+  try {
+    const deleteRes = await deleteSurvey(parseInt(id));
+    if (!deleteRes)
+      return res.status(400).json({
+        message: "No survey found for this id",
+        success: false,
+      });
+
+    res.status(200).json({
+      message: "Survey deleted successfully",
+      success: true,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Internal Server Error",
+      success: false,
+    });
+  }
+};
+
+type UpdateSurvey = {
+  questionId: string | number;
+  id: string | number;
+};
+
+function stringToNumConvertFn(str: string | number): number {
+  const num = typeof str === "string" ? parseInt(str) : str;
+  if (isNaN(Number(num))) throw new Error(`Invalid number: ${str}`);
+  return Number(num);
+}
+
+export const updateSurveyFn = async (req: Request, res: Response) => {
+  const data: UpdateSurvey[] = req.body.data;
+
+  if (!data || data.length == 0)
+    return res.status(400).json({
+      message: "Required data is missing",
+      success: false,
+    });
+
+  try {
+    const updatedData = data
+      .map((item) => {
+        const questionId = stringToNumConvertFn(item.questionId);
+        const id = stringToNumConvertFn(item.id);
+        if (!questionId || !id) return null;
+        return { questionId, id };
+      })
+      .filter((x): x is { questionId: number; id: number } => x !== null);
+
+    await Promise.all(
+      updatedData.map(({ questionId, id }) =>
+        prisma.options.update({
+          data: { votes: { increment: 1 } },
+          where: { questionId, id },
+        })
+      )
+    );
+
+    res.status(200).json({
+      message: "Updated Successfully",
+      success: true,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Internal Server Error",
+      success: false,
+    });
+  }
+};
+
+// Update fn...
+
+// [
+//   { "questionId": 1, "optionId": 12 },
+//   { "questionId": 2, "optionId": 4 },
+// ];
 
 // {
 //    "title": "Your survey Title",

@@ -40,3 +40,13 @@ export const createSurvey = async (data: Survey) => {
 
   return createSurveyRes;
 };
+
+export const deleteSurvey = async (id: number) => {
+  const deleteSurveyRes = await prisma.survey.delete({
+    where: {
+      id,
+    },
+  });
+
+  return deleteSurveyRes;
+};
